@@ -1,6 +1,5 @@
 const express = require("express");
 const bodyParser = require("body-parser");
-const connectDB = require("./config/db");
 const bookRoutes = require("./routes/bookRoutes");
 
 // Initialize Express app
@@ -19,8 +18,7 @@ app.get("/", (req, res) => {
   res.send("Welcome to the Library Management System API");
 });
 
-// Connect to MongoDB
-connectDB();
+// No database connection needed as we're using mock data
 
 // Start the server
 app.listen(PORT, () => {

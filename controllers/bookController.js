@@ -1,9 +1,9 @@
-const Book = require("../models/Book");
+// Import mock data
+let books = require("../data/books");
 
 // Get all books
-exports.getAllBooks = async (req, res) => {
+exports.getAllBooks = (req, res) => {
   try {
-    const books = await Book.find();
     res.status(200).json({
       success: true,
       count: books.length,
@@ -18,9 +18,9 @@ exports.getAllBooks = async (req, res) => {
 };
 
 // Get a single book by ID
-exports.getBookById = async (req, res) => {
+exports.getBookById = (req, res) => {
   try {
-    const book = await Book.findById(req.params.id);
+    const book = books.find((book) => book.id === req.params.id);
 
     if (!book) {
       return res.status(404).json({
@@ -42,82 +42,95 @@ exports.getBookById = async (req, res) => {
 };
 
 // Create a new book
-exports.createBook = async (req, res) => {
+exports.createBook = (req, res) => {
   try {
-    const book = await Book.create(req.body);
+    const { title, author, isbn, publishedYear, genre, description, quantity } =
+      req.body;
+
+    // Basic validation
+    if (!title || !author || !isbn || !publishedYear || !genre) {
+      return res.status(400).json({
+        success: false,
+        error:
+          "Please provide all required fields: title, author, isbn, publishedYear, genre",
+      });
+    }
+
+    // Create new book
+    const newBook = {
+      id: (books.length + 1).toString(),
+      title,
+      author,
+      isbn,
+      publishedYear,
+      genre,
+      description: description || "",
+      quantity: quantity || 1,
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+    };
+
+    books.push(newBook);
 
     res.status(201).json({
       success: true,
-      data: book,
+      data: newBook,
     });
   } catch (error) {
-    if (error.name === "ValidationError") {
-      const messages = Object.values(error.errors).map((val) => val.message);
-
-      return res.status(400).json({
-        success: false,
-        error: messages,
-      });
-    } else {
-      res.status(500).json({
-        success: false,
-        error: "Server Error",
-      });
-    }
+    res.status(500).json({
+      success: false,
+      error: "Server Error",
+    });
   }
 };
 
 // Update a book
-exports.updateBook = async (req, res) => {
+exports.updateBook = (req, res) => {
   try {
-    let book = await Book.findById(req.params.id);
+    const bookIndex = books.findIndex((book) => book.id === req.params.id);
 
-    if (!book) {
+    if (bookIndex === -1) {
       return res.status(404).json({
         success: false,
         error: "Book not found",
       });
     }
 
-    book = await Book.findByIdAndUpdate(req.params.id, req.body, {
-      new: true,
-      runValidators: true,
-    });
+    // Update book
+    const updatedBook = {
+      ...books[bookIndex],
+      ...req.body,
+      updatedAt: new Date().toISOString(),
+    };
+
+    books[bookIndex] = updatedBook;
 
     res.status(200).json({
       success: true,
-      data: book,
+      data: updatedBook,
     });
   } catch (error) {
-    if (error.name === "ValidationError") {
-      const messages = Object.values(error.errors).map((val) => val.message);
-
-      return res.status(400).json({
-        success: false,
-        error: messages,
-      });
-    } else {
-      res.status(500).json({
-        success: false,
-        error: "Server Error",
-      });
-    }
+    res.status(500).json({
+      success: false,
+      error: "Server Error",
+    });
   }
 };
 
 // Delete a book
-exports.deleteBook = async (req, res) => {
+exports.deleteBook = (req, res) => {
   try {
-    const book = await Book.findById(req.params.id);
+    const bookIndex = books.findIndex((book) => book.id === req.params.id);
 
-    if (!book) {
+    if (bookIndex === -1) {
       return res.status(404).json({
         success: false,
         error: "Book not found",
       });
     }
 
-    await Book.findByIdAndDelete(req.params.id);
+    // Remove book from array
+    books = books.filter((book) => book.id !== req.params.id);
 
     res.status(200).json({
       success: true,

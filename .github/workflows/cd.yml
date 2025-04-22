@@ -1,0 +1,29 @@
+name: Node.js CD
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v3
+    - name: Use Node.js 22.x
+      uses: actions/setup-node@v3
+      with:
+        node-version: 22.x
+        cache: 'npm'
+    - run: npm ci
+    - run: npm run lint
+    - run: npm test
+    
+    # Example deployment step (uncomment and modify as needed)
+    # - name: Deploy to production
+    #   run: |
+    #     # Add your deployment commands here
+    #     # For example, deploying to Heroku:
+    #     # npm install -g heroku
+    #     # heroku login -i
+    #     # git push heroku main

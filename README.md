@@ -1,13 +1,14 @@
 # Library Management System
 
-A simple book management library application built with Node.js, Express, and MongoDB.
+A simple book management library application built with Node.js and Express using mock data.
 
 ## Features
 
 - CRUD operations for books
 - RESTful API design
-- MongoDB database integration
+- Mock data for testing and development
 - MVC architecture
+- CI/CD with GitHub Actions
 
 ## API Endpoints
 
@@ -24,18 +25,43 @@ A simple book management library application built with Node.js, Express, and Mo
    ```
    npm install
    ```
-3. Make sure MongoDB is running on your local machine
-4. Start the server:
+3. Start the server:
    ```
    npm start
    ```
-   
+
 ## Development
 
 To run the server in development mode with nodemon:
+
 ```
 npm run dev
 ```
+
+## Testing
+
+Run tests with Jest:
+
+```
+npm test
+```
+
+## Linting
+
+Run ESLint:
+
+```
+npm run lint
+```
+
+## CI/CD
+
+This project includes GitHub Actions workflows for Continuous Integration and Continuous Deployment:
+
+- **CI Workflow**: Runs on push to main branch and pull requests. It installs dependencies, runs linting, and executes tests.
+- **CD Workflow**: Runs on push to main branch. It installs dependencies, runs linting, executes tests, and is set up for deployment (commented out by default).
+
+Both workflows are configured to use Node.js v22.x to match the development environment.
 
 ## Book Model
 
